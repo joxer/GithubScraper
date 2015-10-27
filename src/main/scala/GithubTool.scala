@@ -11,11 +11,11 @@ object GithubTool {
   val scraper = new GithubScraper(Const.token);
   val storer = new GithubStorer()
 
-  def getValueFromGithubAndPutInRedis(offset: Integer): Unit = {
-    var objects = scraper.getReposAndConstructObject(offset)
-
-    for (obj <- objects) {
-      storer.storeObject(obj.name, obj.pickle.value)
+  def getValueFromGithubAndPutInRedis(): Integer = {
+    var obj = scraper.getRepo() match {
+      case Some(x) => storer.storeObject(x.id, x.pickle.value)
+      case _ => throw new NoSuchElementException
     }
+    return obj
   }
 }

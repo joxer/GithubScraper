@@ -12,19 +12,20 @@ class GithubStorer(address: String = "localhost", port: Integer = 6379) {
 
   val client = new RedisClient(address, port)
 
-  def storeObject(key: String, obj: String): Boolean = {
+  def storeObject(key: Integer, obj: String): Integer = {
     client.set(key, obj);
+    key
   }
 
-  def removeObject(key: String): Unit = {
+  def removeObject(key: Integer): Unit = {
     client.del(key)
   }
 
   def getAllObjects(): List[GithubScraper.Repository] = {
-    return for {obj <- client.keys("*").get} yield JSONPickle.apply(getObject(obj.get).get).unpickle[GithubScraper.Repository]
+    return for {obj <- client.keys("*").get} yield JSONPickle.apply(getObject(obj.get.toInt).get).unpickle[GithubScraper.Repository]
   }
 
-  def getObject(key: String): Option[String] = {
+  def getObject(key: Integer): Option[String] = {
     client.get(key)
   }
 
